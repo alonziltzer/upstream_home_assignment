@@ -1,9 +1,9 @@
-from pipeline.stages.common import create_spark_session
-from pipeline.stages.silver import (
+from pipeline.assets.silver import (
     _fix_trailing_spaces_in_manufacturer,
     _remove_null_vin,
     _standard_gear_positions_to_integers,
 )
+from pipeline.dagster.resources import spark_session_resource
 
 
 def test_remove_trailing_spaces_manufacturer():
@@ -13,15 +13,18 @@ def test_remove_trailing_spaces_manufacturer():
         {"vin": "VIN3", "manufacturer": "Ford    "},
         {"vin": "VIN3", "manufacturer": " Fiat"},
     ]
-    df = create_spark_session("test_silver").createDataFrame(data)
-    actual = _fix_trailing_spaces_in_manufacturer(df)
-    assert actual.count() == 4
-    assert {row.manufacturer for row in actual.select("manufacturer").collect()} == {
-        "Toyota",
-        "Honda",
-        "Ford",
-        " Fiat",
-    }
+    with spark_session_resource() as spark:
+        df = spark.createDataFrame(data)
+        actual = _fix_trailing_spaces_in_manufacturer(df)
+        assert actual.count() == 4
+        assert {
+            row.manufacturer for row in actual.select("manufacturer").collect()
+        } == {
+            "Toyota",
+            "Honda",
+            "Ford",
+            " Fiat",
+        }
 
 
 def test_remove_null_vin():
@@ -29,10 +32,11 @@ def test_remove_null_vin():
         {"vin": None, "manufacturer": "Ford", "gearPosition": "1"},
         {"vin": "VIN4", "manufacturer": "Chevy", "gearPosition": "5"},
     ]
-    df = create_spark_session("test_silver").createDataFrame(data)
-    actual = _remove_null_vin(df)
-    assert actual.count() == 1
-    assert actual.first().vin == "VIN4"
+    with spark_session_resource() as spark:
+        df = spark.createDataFrame(data)
+        actual = _remove_null_vin(df)
+        assert actual.count() == 1
+        assert actual.first().vin == "VIN4"
 
 
 def test_standard_gear_positions_to_integers():
@@ -44,13 +48,15 @@ def test_standard_gear_positions_to_integers():
         {"vin": "VIN4", "manufacturer": "Chevy", "gearPosition": "5"},
         {"vin": "VIN5", "manufacturer": "Seat", "gearPosition": "asdad"},
     ]
-    df = create_spark_session("test_silver").createDataFrame(data)
-    actual = _standard_gear_positions_to_integers(df)
-    actual = {
-        row.vin: row.gearPosition
-        for row in actual.select("vin", "gearPosition").collect()
-    }
+    with spark_session_resource() as spark:
+        df = spark.createDataFrame(data)
 
-    expected_values = {"VIN1": -1, "VIN2": 0, "VIN3": 1, "VIN4": 5}
+        actual = _standard_gear_positions_to_integers(df)
+        actual = {
+            row.vin: row.gearPosition
+            for row in actual.select("vin", "gearPosition").collect()
+        }
 
-    assert actual == expected_values
+        expected_values = {"VIN1": -1, "VIN2": 0, "VIN3": 1, "VIN4": 5}
+
+        assert actual == expected_values

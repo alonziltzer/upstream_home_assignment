@@ -3,7 +3,7 @@ SHELL := /bin/bash
 CONDA_ENV := upstream_home_assignment
 
 ENV_FILE := environment.yml
-.PHONY: help create test
+.PHONY: create test
 
 create:
 	@echo "Creating conda environment..."

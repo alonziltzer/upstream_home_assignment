@@ -9,5 +9,7 @@ dependencies:
   - pytest
   - black
   - flake8
+  - docker-py
   - pip:
       - pyspark==3.5.0
+      - dagster
