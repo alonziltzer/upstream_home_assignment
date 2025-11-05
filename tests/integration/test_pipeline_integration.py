@@ -3,7 +3,7 @@ import requests
 import docker
 import pytest
 from dagster import materialize
-
+import glob
 from pipeline.dagster.resources import spark_session_resource
 from pipeline.assets.all_assets_def import defs
 
@@ -43,6 +43,7 @@ def is_service_up():
 
 
 def _load_container():
+    _assemble_tar()
     client = docker.from_env()
     image_tar_path = (
         "/Users/aziltzer/projects/upstream_home_assignment/"
@@ -80,3 +81,17 @@ def _create_assets():
             "/Users/aziltzer/projects/upstream_home_assignment/"
             "data_lake/gold_top_10_fastest_vehicles_per_date_hour_report"
         ).show()
+
+
+def _assemble_tar():
+    path = "/Users/aziltzer/projects/upstream_home_assignment/pipeline/docker/"
+    output_file = path+ "/upstream-interview-m1.tar"
+    part_files = sorted(glob.glob(path+"upstream-interview-m1-part-*"))
+
+    with open(output_file, "wb") as outfile:
+        for part in part_files:
+            print(f"Merging {part}...")
+            with open(part, "rb") as infile:
+                outfile.write(infile.read())
+
+    print(f"Combined {len(part_files)} parts into {output_file}")
