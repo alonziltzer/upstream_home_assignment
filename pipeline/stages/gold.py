@@ -4,17 +4,18 @@ from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
 from pipeline.stages.common import get_silver_path, get_gold_path, create_spark_session
+import logging
 
 
 def gold_stage():
-    print("gold stage started")
-    _vin_last_state_report()
+    logging.info("gold stage started")
+    #_vin_last_state_report()
     # generate_top_10_fastest_vehicles()
-    print("gold stage finished")
+    logging.info("gold stage finished")
 
 
 def _vin_last_state_report():
-    print("start vin last state report")
+    logging.info("start vin last state report")
     spark = create_spark_session("gold_stage")
     silver_path = get_silver_path()
     gold_path = get_gold_path()

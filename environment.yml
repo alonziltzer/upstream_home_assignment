@@ -1,0 +1,12 @@
+name: upstream_home_assignment
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - requests
+  - pytest
+  - black
+  - flake8
+  - pip:
+      - pyspark==3.5.0
