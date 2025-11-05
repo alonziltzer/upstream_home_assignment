@@ -32,7 +32,9 @@ def _write_parquet_to_bronze_path_partition_by_date_and_hour(df):
 
 def _get_data_from_service(amount: int = 10000):
     try:
-        response = requests.get(f"http://localhost:9900/upstream/vehicle_messages?amount={amount}")
+        response = requests.get(
+            f"http://localhost:9900/upstream/vehicle_messages?amount={amount}"
+        )
         response.raise_for_status()
         return response.json()
     except requests.RequestException as e:

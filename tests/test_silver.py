@@ -1,5 +1,3 @@
-from pyspark.sql import functions as F
-
 from pipeline.stages.common import create_spark_session
 from pipeline.stages.silver import (
     _fix_trailing_spaces_in_manufacturer,
@@ -18,7 +16,12 @@ def test_remove_trailing_spaces_manufacturer():
     df = create_spark_session("test_silver").createDataFrame(data)
     actual = _fix_trailing_spaces_in_manufacturer(df)
     assert actual.count() == 4
-    assert {row.manufacturer for row in actual.select("manufacturer").collect()} == {"Toyota", "Honda", "Ford", " Fiat"}
+    assert {row.manufacturer for row in actual.select("manufacturer").collect()} == {
+        "Toyota",
+        "Honda",
+        "Ford",
+        " Fiat",
+    }
 
 
 def test_remove_null_vin():
@@ -42,6 +45,8 @@ def test_standard_gear_positions_to_integers():
     ]
     df = create_spark_session("test_silver").createDataFrame(data)
     df_clean = _standard_gear_positions_to_integers(df)
-    gear_values = set([row.gearPosition for row in df_clean.select("gearPosition").collect()])
+    gear_values = set(
+        [row.gearPosition for row in df_clean.select("gearPosition").collect()]
+    )
     expected_values = {-1, 0, 1, 5}
     assert gear_values == expected_values

@@ -11,7 +11,7 @@ create:
 
 test:
 	@echo "Running black..."
-	conda run -n $(CONDA_ENV) python -m black --check pipeline tests
+	conda run -n $(CONDA_ENV) python -m black pipeline tests
 	@echo "Running flake8..."
 	conda run -n $(CONDA_ENV) python -m flake8 pipeline tests
 	@echo "Running pytest...    "

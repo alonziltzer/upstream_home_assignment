@@ -1,5 +1,9 @@
 from pyspark.sql import functions as F
-from pipeline.stages.common import create_spark_session, get_silver_path, get_bronze_path
+from pipeline.stages.common import (
+    create_spark_session,
+    get_silver_path,
+    get_bronze_path,
+)
 
 
 def silver_stage():
@@ -16,7 +20,7 @@ def _standard_gear_positions_to_integers(df):
         "gearPosition",
         F.when(F.col("gearPosition") == "REVERSE", F.lit(-1))
         .when(F.col("gearPosition") == "NEUTRAL", F.lit(0))
-        .otherwise(F.col("gearPosition").cast("int"))
+        .otherwise(F.col("gearPosition").cast("int")),
     ).filter(F.col("gearPosition").isNotNull())
 
 

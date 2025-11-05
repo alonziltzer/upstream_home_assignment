@@ -12,14 +12,46 @@ from pipeline.stages.common import create_spark_session
 @patch("pipeline.stages.bronze._get_data_from_service")
 def test_bronze_stage(mock_get_data):
     MOCK_DATA = [
-        {"vin": "VIN1", "manufacturer": "Toyota", "timestamp": 1700000000000},  # 2023-11-14 / hour 20
-        {"vin": "VIN2", "manufacturer": "Honda", "timestamp": 1700000000000},  # 2023-11-14 / hour 20
-        {"vin": "VIN3", "manufacturer": "Ford", "timestamp": 1700003600000},  # 2023-11-14 / hour 21
-        {"vin": "VIN4", "manufacturer": "Chevy", "timestamp": 1700003600000},  # 2023-11-14 / hour 21
-        {"vin": "VIN5", "manufacturer": "Nissan", "timestamp": 1700086400000},  # 2023-11-15 / hour 20
-        {"vin": "VIN6", "manufacturer": "Mazda", "timestamp": 1700086400000},  # 2023-11-15 / hour 20
-        {"vin": "VIN7", "manufacturer": "Kia", "timestamp": 1700090000000},  # 2023-11-15 / hour 21
-        {"vin": "VIN8", "manufacturer": "Subaru", "timestamp": 1700090000000},  # 2023-11-15 / hour 21
+        {
+            "vin": "VIN1",
+            "manufacturer": "Toyota",
+            "timestamp": 1700000000000,
+        },  # 2023-11-14 / hour 20
+        {
+            "vin": "VIN2",
+            "manufacturer": "Honda",
+            "timestamp": 1700000000000,
+        },  # 2023-11-14 / hour 20
+        {
+            "vin": "VIN3",
+            "manufacturer": "Ford",
+            "timestamp": 1700003600000,
+        },  # 2023-11-14 / hour 21
+        {
+            "vin": "VIN4",
+            "manufacturer": "Chevy",
+            "timestamp": 1700003600000,
+        },  # 2023-11-14 / hour 21
+        {
+            "vin": "VIN5",
+            "manufacturer": "Nissan",
+            "timestamp": 1700086400000,
+        },  # 2023-11-15 / hour 20
+        {
+            "vin": "VIN6",
+            "manufacturer": "Mazda",
+            "timestamp": 1700086400000,
+        },  # 2023-11-15 / hour 20
+        {
+            "vin": "VIN7",
+            "manufacturer": "Kia",
+            "timestamp": 1700090000000,
+        },  # 2023-11-15 / hour 21
+        {
+            "vin": "VIN8",
+            "manufacturer": "Subaru",
+            "timestamp": 1700090000000,
+        },  # 2023-11-15 / hour 21
     ]
 
     mock_get_data.return_value = MOCK_DATA

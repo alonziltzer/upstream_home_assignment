@@ -3,11 +3,12 @@ import os
 
 
 def create_spark_session(stage_name):
-    return SparkSession.builder \
-        .appName(stage_name) \
-        .config("spark.driver.bindAddress", "127.0.0.1") \
-        .config("spark.driver.host", "127.0.0.1") \
+    return (
+        SparkSession.builder.appName(stage_name)
+        .config("spark.driver.bindAddress", "127.0.0.1")
+        .config("spark.driver.host", "127.0.0.1")
         .getOrCreate()
+    )
 
 
 def _get_data_lake_path():
