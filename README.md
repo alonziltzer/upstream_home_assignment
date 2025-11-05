@@ -1,9 +1,8 @@
 Upstream Home Assignment Pipeline
 =================================
 
-This project implements a Bronze → Silver → Gold data pipeline using PySpark.
-It reads vehicle messages from an upstream API, transforms the data, and writes
-partitioned parquet files by date and hour.
+This project implements a Bronze data pipeline using PySpark for vehicle messages from an upstream API
+,transforms the data, and create reports.
 
 Pipeline Details
 ----------------
