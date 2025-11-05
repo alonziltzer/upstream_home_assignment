@@ -42,11 +42,15 @@ def test_standard_gear_positions_to_integers():
         {"vin": "VIN2", "manufacturer": "Honda", "gearPosition": "None"},
         {"vin": "VIN3", "manufacturer": "Ford", "gearPosition": "1"},
         {"vin": "VIN4", "manufacturer": "Chevy", "gearPosition": "5"},
+        {"vin": "VIN5", "manufacturer": "Seat", "gearPosition": "asdad"},
     ]
     df = create_spark_session("test_silver").createDataFrame(data)
-    df_clean = _standard_gear_positions_to_integers(df)
-    gear_values = set(
-        [row.gearPosition for row in df_clean.select("gearPosition").collect()]
-    )
-    expected_values = {-1, 0, 1, 5}
-    assert gear_values == expected_values
+    actual = _standard_gear_positions_to_integers(df)
+    actual = {
+        row.vin: row.gearPosition
+        for row in actual.select("vin", "gearPosition").collect()
+    }
+
+    expected_values = {"VIN1": -1, "VIN2": 0, "VIN3": 1, "VIN4": 5}
+
+    assert actual == expected_values
