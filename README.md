@@ -1,8 +1,8 @@
 Upstream Home Assignment Pipeline
 =================================
 
-This project implements a Bronze data pipeline using PySpark & Dagster for vehicle messages from an upstream API
-,transforms the data, and create reports.
+This project implements a data pipeline using PySpark & Dagster for vehicle messages
+and creats Bronze , Silver , Gold & Bonus Data assets
 
 Pipeline Details
 ----------------
@@ -18,11 +18,11 @@ Pipeline Details
    - Standardize `gearPosition` to integers
    - Write result to `data_lake/Silver`
 
-3. Gold Stage 
+3. Gold  
    - Final aggregations/metrics
    - Write results to `data_lake/Gold`
 
-4. Bonus Stage 
+4. Bonus  
    - create sql injection report
 
 
