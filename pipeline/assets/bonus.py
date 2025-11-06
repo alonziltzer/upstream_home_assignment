@@ -21,8 +21,24 @@ def bonus_asset(context: AssetExecutionContext, Bronze: DataFrame):
     columns = context.op_config["columns"]
     regex_list = context.op_config["regex_list"]
 
-    # Explode all configured columns into rows: (column_name, value)
-    exploded_df = Bronze.select(
+    date_to_check = _explode_columns_to_rows(Bronze, columns)
+
+    combined_regex = "(" + "|".join(regex_list) + ")"
+
+    filtered_df = date_to_check.filter(F.col("violating_message").rlike(combined_regex))
+    return _give_the_matched_regex(filtered_df)
+
+
+def _give_the_matched_regex(filtered_df):
+    pattern_match_expr = F.coalesce(
+        *[F.when(F.col("violating_message").rlike(r), F.lit(r)) for r in regex_list]
+    )
+
+    return filtered_df.withColumn("pattern_matched", pattern_match_expr)
+
+
+def _explode_columns_to_rows(Bronze, columns):
+    return Bronze.select(
         F.explode(
             F.array(
                 *[
@@ -35,13 +51,3 @@ def bonus_asset(context: AssetExecutionContext, Bronze: DataFrame):
             )
         ).alias("col_struct")
     ).select("col_struct.*")
-
-    combined_regex = "(" + "|".join(regex_list) + ")"
-
-    filtered_df = exploded_df.filter(F.col("violating_message").rlike(combined_regex))
-
-    pattern_match_expr = F.coalesce(
-        *[F.when(F.col("violating_message").rlike(r), F.lit(r)) for r in regex_list]
-    )
-
-    return filtered_df.withColumn("pattern_matched", pattern_match_expr)

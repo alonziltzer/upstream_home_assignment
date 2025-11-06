@@ -1,17 +1,17 @@
 Upstream Home Assignment Pipeline
 =================================
 
-This project implements a Bronze data pipeline using PySpark for vehicle messages from an upstream API
+This project implements a Bronze data pipeline using PySpark & Dagster for vehicle messages from an upstream API
 ,transforms the data, and create reports.
 
 Pipeline Details
 ----------------
-1. Bronze Stage
+1. Bronze:
    - Fetch raw data from API
    - Add `date` and `hour` columns from `timestamp`
    - Write partitioned parquet by date,hour `data_lake/Bronze`
 
-2. Silver Stage
+2. Silver:
    - read data from `data_lake/Bronze`
    - Remove trailing spaces in `manufacturer`
    - Remove null VINs
@@ -22,6 +22,8 @@ Pipeline Details
    - Final aggregations/metrics
    - Write results to `data_lake/Gold`
 
+4. Bonus Stage 
+   - create sql injection report
 
 
 Prerequisites
