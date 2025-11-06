@@ -7,7 +7,7 @@ import glob
 
 from pipeline.config import DOCKER_PATH, DATA_LAKE_PATH
 from pipeline.dagster.resources import spark_session_resource
-from pipeline.assets.all_assets_def import defs
+from pipeline.dagster.all_assets_def import defs
 import logging
 
 
