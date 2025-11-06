@@ -1,7 +1,7 @@
 Upstream Home Assignment Pipeline
 =================================
 
-This project implements a data pipeline using PySpark & Dagster for vehicle messages
+This project implements a data pipeline for vehicle messages
 and creats Bronze , Silver , Gold & Bonus Data assets
 
 Pipeline Details
