@@ -26,10 +26,10 @@ def bonus_asset(context: AssetExecutionContext, Bronze: DataFrame):
     combined_regex = "(" + "|".join(regex_list) + ")"
 
     filtered_df = date_to_check.filter(F.col("violating_message").rlike(combined_regex))
-    return _give_the_matched_regex(filtered_df)
+    return _give_the_matched_regex(filtered_df, regex_list)
 
 
-def _give_the_matched_regex(filtered_df):
+def _give_the_matched_regex(filtered_df, regex_list):
     pattern_match_expr = F.coalesce(
         *[F.when(F.col("violating_message").rlike(r), F.lit(r)) for r in regex_list]
     )
