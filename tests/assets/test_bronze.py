@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch
 
+from pipeline.config import DATA_LAKE_PATH
 from pipeline.dagster.resources import spark_session_resource
 from pipeline.assets.bronze import bronze_asset, _get_data_from_service
 import os
@@ -30,10 +31,7 @@ def test_bronze_stage(mock_get_data):
         resources={
             "spark_session_resource": spark_session_resource,
             "io_manager": spark_parquet_io_manager.configured(
-                {
-                    "base_path": "/Users/aziltzer/projects/"
-                    "upstream_home_assignment/data_lake"
-                }
+                {"base_path": DATA_LAKE_PATH}
             ),
         },
     )

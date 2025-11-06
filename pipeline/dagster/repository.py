@@ -1,4 +1,6 @@
 from dagster import Definitions
+
+from pipeline.config import DATA_LAKE_PATH
 from pipeline.dagster.spark_io_manager import (
     spark_parquet_io_manager,
 )
@@ -11,8 +13,6 @@ definitions = Definitions(
     assets=[bronze_asset, silver_asset, gold_asset],
     resources={
         "spark_session_resource": spark_session_resource,
-        "io_manager": spark_parquet_io_manager.configured(
-            base_path="/Users/aziltzer/projects/upstream_home_assignment/data_lake"
-        ),
+        "io_manager": spark_parquet_io_manager.configured(base_path=DATA_LAKE_PATH),
     },
 )

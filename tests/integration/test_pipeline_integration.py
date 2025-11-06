@@ -4,6 +4,8 @@ import docker
 import pytest
 from dagster import materialize
 import glob
+
+from pipeline.config import DOCKER_PATH, DATA_LAKE_PATH
 from pipeline.dagster.resources import spark_session_resource
 from pipeline.assets.all_assets_def import defs
 
@@ -45,19 +47,14 @@ def is_service_up():
 def _load_container():
     _assemble_tar()
     client = docker.from_env()
-    image_tar_path = (
-        "/Users/aziltzer/projects/upstream_home_assignment/"
-        "pipeline/docker/upstream-interview-m1.tar"
-    )
+    image_tar_path = str(DOCKER_PATH) + "/upstream-interview-m1.tar"
 
-    # Load the Docker image
     with open(image_tar_path, "rb") as f:
         loaded_images = client.images.load(f.read())
 
     for image in loaded_images:
         print(f"Loaded image: {image.tags}")
 
-    # Run the container
     return client.containers.run(
         "upstream-interview", detach=True, ports={"9900/tcp": 9900}
     )
@@ -67,26 +64,17 @@ def _create_assets():
     result = materialize(assets=defs.assets, resources=defs.resources)
     assert result.success
     with spark_session_resource() as spark:
+        spark.read.parquet(str(DATA_LAKE_PATH) + "/Bronze").show()
+        spark.read.parquet(str(DATA_LAKE_PATH) + "/Silver").show()
+        spark.read.parquet(str(DATA_LAKE_PATH) + "/Gold_vin_last_state_report").show()
         spark.read.parquet(
-            "/Users/aziltzer/projects/upstream_home_assignment/data_lake/Bronze"
-        ).show()
-        spark.read.parquet(
-            "/Users/aziltzer/projects/upstream_home_assignment/data_lake/Silver"
-        ).show()
-        spark.read.parquet(
-            "/Users/aziltzer/projects/upstream_home_assignment/"
-            "data_lake/Gold_vin_last_state_report"
-        ).show()
-        spark.read.parquet(
-            "/Users/aziltzer/projects/upstream_home_assignment/"
-            "data_lake/gold_top_10_fastest_vehicles_per_date_hour_report"
+            str(DATA_LAKE_PATH) + "/gold_top_10_fastest_vehicles_per_date_hour_report"
         ).show()
 
 
 def _assemble_tar():
-    path = "/Users/aziltzer/projects/upstream_home_assignment/pipeline/docker/"
-    output_file = path+ "/upstream-interview-m1.tar"
-    part_files = sorted(glob.glob(path+"upstream-interview-m1-part-*"))
+    output_file = str(DOCKER_PATH) + "/upstream-interview-m1.tar"
+    part_files = sorted(glob.glob(str(DOCKER_PATH) + "/upstream-interview-m1-part-*"))
 
     with open(output_file, "wb") as outfile:
         for part in part_files:
