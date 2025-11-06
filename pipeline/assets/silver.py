@@ -11,12 +11,18 @@ def silver_asset(Bronze: DataFrame):
 
 
 def _standard_gear_positions_to_integers(df):
+    valid_gear_positions = ["-1", "0", "1", "2", "3", "4", "5", "6"]
     return df.withColumn(
         "gearPosition",
         F.when(F.col("gearPosition") == "REVERSE", F.lit(-1))
         .when(F.col("gearPosition") == "NEUTRAL", F.lit(0))
-        .otherwise(F.col("gearPosition").cast("int")),
-    ).filter(F.col("gearPosition").isNotNull())
+        .when(
+            F.col("gearPosition").isin(valid_gear_positions),
+            F.col("gearPosition").cast("int"),
+        )
+        .when(F.col("gearPosition").isNull(), F.lit(-1000))
+        .otherwise(F.lit(-1001)),
+    )
 
 
 def _fix_trailing_spaces_in_manufacturer(df):

@@ -1,5 +1,5 @@
 import pandas as pd
-from pipeline.assets.gold import _top_k_fastest_vehicles_per_hour_report
+from pipeline.assets.gold.top_10_report import _top_k_fastest_vehicles_per_hour_report
 from pipeline.dagster.resources import spark_session_resource
 
 

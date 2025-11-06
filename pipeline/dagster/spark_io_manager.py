@@ -14,7 +14,7 @@ class SparkParquetIOManager(IOManager):
         asset_name = (
             context.asset_key.path[-1] if context.asset_key else context.step_key
         )
-        path = os.path.join(self.base_path, asset_name)
+        path = _get_path(self, asset_name, context)
         partition_cols = (
             context.metadata.get("partition_by") if context.metadata else None
         )
@@ -37,10 +37,20 @@ class SparkParquetIOManager(IOManager):
             if context.upstream_output.asset_key
             else context.upstream_output.step_key
         )
-        path = os.path.join(self.base_path, asset_name)
+
+        path = _get_path(self, asset_name, context)
         df = self.spark.read.parquet(path)
         context.log.info(f"Loaded Spark DataFrame from {path}")
         return df
+
+
+def _get_path(self, asset_name, context):
+    if context.metadata and "relative_path" in context.metadata:
+        return os.path.join(
+            self.base_path, context.metadata.get("relative_path")[0], asset_name
+        )
+    else:
+        return os.path.join(self.base_path, asset_name)
 
 
 @io_manager(required_resource_keys={"spark_session_resource"})

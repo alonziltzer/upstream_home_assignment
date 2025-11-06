@@ -16,6 +16,7 @@ Pipeline Details
    - Remove trailing spaces in `manufacturer`
    - Remove null VINs
    - Standardize `gearPosition` to integers
+   - Write result to `data_lake/Silver`
 
 3. Gold Stage 
    - Final aggregations/metrics
@@ -28,15 +29,17 @@ Prerequisites
 - macOS, Linux 
 - Conda or Miniconda
 - java
+- docker
 
 Setup
------
-Create the Conda environment:
+-------------
+
     make create
 
 
 Testing and Code Quality
 ------------------------
+
     make test
 
 

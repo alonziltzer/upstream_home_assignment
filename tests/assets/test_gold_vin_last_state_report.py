@@ -1,4 +1,4 @@
-import pipeline.assets.gold as gold
+from pipeline.assets.gold.vin_last_state_report import vin_last_state_report_asset
 from pandas.testing import assert_frame_equal
 import pandas as pd
 from pipeline.dagster.resources import spark_session_resource
@@ -7,7 +7,7 @@ from pipeline.dagster.resources import spark_session_resource
 def test_vin_last_state_report():
     with spark_session_resource() as spark:
         silver = _create_vin_last_state_report_input(spark)
-        actual = gold.gold_vin_last_state_report_asset(silver).orderBy("vin")
+        actual = vin_last_state_report_asset(silver).orderBy("vin")
         expected = [
             {
                 "vin": "VIN1",

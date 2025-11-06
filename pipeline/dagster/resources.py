@@ -11,4 +11,3 @@ def spark_session_resource():
         .getOrCreate()
     )
     yield spark
-    spark.stop()

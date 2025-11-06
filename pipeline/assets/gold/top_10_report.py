@@ -4,24 +4,11 @@ from dagster import asset
 from pyspark.sql import DataFrame
 
 
-@asset(name="Gold_vin_last_state_report")
-def gold_vin_last_state_report_asset(Silver: DataFrame):
-    return Silver.groupBy("vin").agg(
-        F.max("timestamp").alias("last_reported_timestamp"),
-        F.max(
-            F.when(
-                F.col("frontLeftDoorState").isNotNull(),
-                F.col("frontLeftDoorState"),
-            )
-        ).alias("front_left_door_state"),
-        F.max(F.when(F.col("wipersState").isNotNull(), F.col("wipersState"))).alias(
-            "wipers_state"
-        ),
-    )
-
-
-@asset(name="gold_top_10_fastest_vehicles_per_date_hour_report")
-def gold_top_10_fastest_vehicles_per_date_hour_report_asset(Silver: DataFrame):
+@asset(
+    name="top_10_fastest_vehicles_per_date_hour_report",
+    metadata={"relative_path": ["Gold"]},
+)
+def top_10_fastest_vehicles_per_date_hour_report_asset(Silver: DataFrame):
     return _top_k_fastest_vehicles_per_hour_report(Silver, k=10)
 
 

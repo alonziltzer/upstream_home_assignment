@@ -43,10 +43,10 @@ def test_standard_gear_positions_to_integers():
     data = [
         {"vin": "VIN1", "manufacturer": "Toyota", "gearPosition": "REVERSE"},
         {"vin": "VIN2", "manufacturer": "Honda", "gearPosition": "NEUTRAL"},
-        {"vin": "VIN2", "manufacturer": "Honda", "gearPosition": "None"},
-        {"vin": "VIN3", "manufacturer": "Ford", "gearPosition": "1"},
-        {"vin": "VIN4", "manufacturer": "Chevy", "gearPosition": "5"},
-        {"vin": "VIN5", "manufacturer": "Seat", "gearPosition": "asdad"},
+        {"vin": "VIN3", "manufacturer": "Honda", "gearPosition": None},
+        {"vin": "VIN4", "manufacturer": "Ford", "gearPosition": "1"},
+        {"vin": "VIN5", "manufacturer": "Chevy", "gearPosition": "5"},
+        {"vin": "VIN6", "manufacturer": "Seat", "gearPosition": "asdad"},
     ]
     with spark_session_resource() as spark:
         df = spark.createDataFrame(data)
@@ -57,6 +57,13 @@ def test_standard_gear_positions_to_integers():
             for row in actual.select("vin", "gearPosition").collect()
         }
 
-        expected_values = {"VIN1": -1, "VIN2": 0, "VIN3": 1, "VIN4": 5}
+        expected_values = {
+            "VIN1": -1,
+            "VIN2": 0,
+            "VIN3": -1000,
+            "VIN4": 1,
+            "VIN5": 5,
+            "VIN6": -1001,
+        }
 
         assert actual == expected_values

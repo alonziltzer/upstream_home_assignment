@@ -8,21 +8,23 @@ import glob
 from pipeline.config import DOCKER_PATH, DATA_LAKE_PATH
 from pipeline.dagster.resources import spark_session_resource
 from pipeline.assets.all_assets_def import defs
+import logging
 
 
 @pytest.mark.integration
 def test_integration():
-    container = _load_container()
+    container = None
     try:
-        is_service_up()
-        _create_assets()
+        container = _load_container()
+        _is_service_up()
+        _assert_assets()
 
     finally:
         container.stop()
         container.remove()
 
 
-def is_service_up():
+def _is_service_up():
     # Poll the server until the /upstream/vehicle_messages endpoint responds
     timeout_seconds = 30
     start = time.time()
@@ -33,7 +35,7 @@ def is_service_up():
             )
             if response.status_code == 200:
                 data = response.json()
-                print(f"Server responded with data: {data}")
+                logging.info(f"Server responded with data: {data}")
                 assert isinstance(data, list)
                 assert len(data) > 0
                 break
@@ -53,23 +55,30 @@ def _load_container():
         loaded_images = client.images.load(f.read())
 
     for image in loaded_images:
-        print(f"Loaded image: {image.tags}")
+        logging.info(f"Loaded image: {image.tags}")
 
     return client.containers.run(
         "upstream-interview", detach=True, ports={"9900/tcp": 9900}
     )
 
 
-def _create_assets():
+def _assert_assets():
     result = materialize(assets=defs.assets, resources=defs.resources)
     assert result.success
     with spark_session_resource() as spark:
+        # todo add general asserts
+        logging.info("Bronze")
         spark.read.parquet(str(DATA_LAKE_PATH) + "/Bronze").show()
+        logging.info("Silver")
         spark.read.parquet(str(DATA_LAKE_PATH) + "/Silver").show()
-        spark.read.parquet(str(DATA_LAKE_PATH) + "/Gold_vin_last_state_report").show()
+        logging.info("Gold: vin_last_state_report")
+        spark.read.parquet(str(DATA_LAKE_PATH) + "/Gold/vin_last_state_report").show()
+        logging.info("Gold: top_10_fastest_vehicles_per_date_hour_report")
         spark.read.parquet(
-            str(DATA_LAKE_PATH) + "/gold_top_10_fastest_vehicles_per_date_hour_report"
+            str(DATA_LAKE_PATH) + "/Gold/top_10_fastest_vehicles_per_date_hour_report"
         ).show()
+        logging.info("Bonus: sql injection report")
+        spark.read.parquet(str(DATA_LAKE_PATH) + "/Bonus/sql_injection_report").show()
 
 
 def _assemble_tar():
@@ -78,8 +87,8 @@ def _assemble_tar():
 
     with open(output_file, "wb") as outfile:
         for part in part_files:
-            print(f"Merging {part}...")
+            logging.info(f"Merging {part}...")
             with open(part, "rb") as infile:
                 outfile.write(infile.read())
 
-    print(f"Combined {len(part_files)} parts into {output_file}")
+    logging.info(f"Combined {len(part_files)} parts into {output_file}")
